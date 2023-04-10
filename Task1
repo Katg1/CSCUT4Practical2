@@ -6,29 +6,30 @@ import javax.swing.*;
 import java.lang.Number;
 
 /**
- * 
  * CSCU9T4 Java strings and files exercise.
- *
  */
 public class FilesInOut {
 
     public static void main(String[] args) {
-      // Set the file names (input and output)
-      String inputFileName = "input.txt";
-        String outputFileName = "output.txt";
-        
-        if (args.length == 2) {
-            inputFileName = args[0];
-            outputFileName = args[1];
+        // Check if at least one argument is provided.
+        if (args.length < 1) {
+            System.err.println("Usage: java FilesInOut inputFile [outputFile]");
+            return;
         }
-        
-        // Set up a new PrintWriter to write the output file.
+
+        // Get the input file name from the first argument.
+        String inputFileName = args[0];
+        // Get the output file name from the second argument, or use a default name if not provided.
+        String outputFileName = (args.length > 1) ? args[1] : "output.txt";
+
         try (Scanner scanner = new Scanner(new File(inputFileName));
-             PrintWriter writer = new PrintWriter(new FileWriter(outputFileName, true))) {
+             PrintWriter writer = new PrintWriter(outputFileName)) {
+            // Read each line from the input file.
             while (scanner.hasNextLine()) {
                 String line = scanner.nextLine();
-                System.out.println(line);
+                // Modify the line according to the modifyLine method.
                 String modifiedLine = modifyLine(line);
+                // Write the modified line to the output file.
                 writer.println(modifiedLine);
             }
         } catch (FileNotFoundException e) {
@@ -38,69 +39,34 @@ public class FilesInOut {
         }
     }
 
+    /**
+     * Modify a line of text by converting it to title case or upper case,
+     * and leaving certain words in lower case.
+     * @param line the original line of text
+     * @return the modified line of text
+     */
     private static String modifyLine(String line) {
-        // Add code here to modify the input line
-        return line.toUpperCase();
-    }
-
-    public static void Title(String[] args) {
-        if (args.length < 2) {
-            System.err.println("Usage: java FilesInOut inputFileName outputFileName");
-            return;
-        }
-        
-        String inputFile = args[0];
-        String outputFile = args[1];
-
+        boolean titleCase = true; // Set to true to enable Title case conversion, false for upper case.
         List<String> lowercaseWords = Arrays.asList("a", "an", "the", "and", "but", "or", "for", "nor", "on", "at", "to", "from", "by");
 
-        try (Scanner scanner = new Scanner(new File(inputFile));
-             PrintWriter writer = new PrintWriter(outputFile)) {
-            while (scanner.hasNextLine()) {
-                String line = scanner.nextLine();
-                String[] words = line.split("\\s+");
-                StringBuilder sb = new StringBuilder();
-                for (int i = 0; i < words.length; i++) {
-                    String word = words[i];
-                    if (i == 0) {
-                        sb.append(word.substring(0, 1).toUpperCase());
-                        sb.append(word.substring(1).toLowerCase());
-                    } else if (lowercaseWords.contains(word.toLowerCase())) {
-                        sb.append(word.toLowerCase());
-                    } else {
-                        sb.append(word.substring(0, 1).toUpperCase());
-                        sb.append(word.substring(1).toLowerCase());
-                    }
-                    sb.append(" ");
-                }
-                writer.println(sb.toString().trim());
+        // Split the line into individual words.
+        String[] words = line.split("\\s+");
+        StringBuilder sb = new StringBuilder();
+        // For each word, modify it according to the rules of title case or upper case.
+        for (int i = 0; i < words.length; i++) {
+            String word = words[i];
+            if (i == 0) { // The first word is always capitalized in title case.
+                sb.append(word.substring(0, 1).toUpperCase());
+                sb.append(word.substring(1).toLowerCase());
+            } else if (titleCase && lowercaseWords.contains(word.toLowerCase())) { // Certain words are kept in lower case in title case.
+                sb.append(word.toLowerCase());
+            } else { // All other words are capitalized in title case or upper case.
+                sb.append(word.substring(0, 1).toUpperCase());
+                sb.append(word.substring(1).toLowerCase());
             }
-        } catch (FileNotFoundException e) {
-            System.err.println("Error opening input file: " + e.getMessage());
-        } catch (IOException e) {
-            System.err.println("Error writing to output file: " + e.getMessage());
+            sb.append(" "); // Add a space after each word.
         }
-    }
-     
-    public static void Uppercase(String[] args) {
-        if (args.length < 1) {
-            System.err.println("Usage: java FilesInOut inputFileName");
-            return;
-        }
-        
-        String inputFile = args[0];
-        String outputFile = "output.txt";
-
-        try (Scanner scanner = new Scanner(new File(inputFile));
-             PrintWriter writer = new PrintWriter(outputFile)) {
-            while (scanner.hasNextLine()) {
-                String line = scanner.nextLine();
-                writer.println(line.toUpperCase());
-            }
-        } catch (FileNotFoundException e) {
-            System.err.println("Error opening input file: " + e.getMessage());
-        } catch (IOException e) {
-            System.err.println("Error writing to output file: " + e.getMessage());
-        }
+        // Return the modified line, either in title case or upper case.
+        return (titleCase) ? sb.toString().trim() : line.toUpperCase();
     }
 }
