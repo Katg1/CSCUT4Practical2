@@ -1,0 +1,83 @@
+import java.io.*;
+import java.util.*;
+
+public class FormatNamesm {
+
+    public static void main(String[] args) {
+        // Check if at least one argument is provided.
+        if (args.length < 2) {
+            System.err.println("Usage: java FormatNamesm [-u] inputFile outputFile");
+            return;
+        }
+
+        // Parse the command line arguments.
+        boolean uppercase = false;
+        String inputFileName = null;
+        String outputFileName = null;
+        for (int i = 0; i < args.length; i++) {
+            String arg = args[i];
+            if (arg.equals("-u")) {
+                uppercase = true;
+            } else if (inputFileName == null) {
+                inputFileName = arg;
+            } else if (outputFileName == null) {
+                outputFileName = arg;
+            }
+        }
+        if (outputFileName == null) {
+            outputFileName = "formatted.txt";
+        }
+
+        try (Scanner scanner = new Scanner(new File(inputFileName));
+             PrintWriter writer = new PrintWriter(outputFileName)) {
+            // Read each line from the input file.
+            while (scanner.hasNextLine()) {
+                String line = scanner.nextLine();
+                // Modify the line according to the modifyLine method.
+                String modifiedLine = modifyLine(line, uppercase);
+                // Write the modified line to the output file.
+                writer.println(modifiedLine);
+            }
+        } catch (FileNotFoundException e) {
+            System.err.println("Error opening input file: " + e.getMessage());
+        } catch (IOException e) {
+            System.err.println("Error writing to output file: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Modify a line of text by formatting the names and dates.
+     * @param line the original line of text
+     * @param uppercase whether to convert the text to uppercase
+     * @return the modified line of text
+     */
+    private static String modifyLine(String line, boolean uppercase) {
+        // Split the line into individual parts.
+        String[] parts = line.split("\\s+");
+        StringBuilder sb = new StringBuilder();
+        // For each part, format it according to the rules.
+        for (int i = 0; i < parts.length; i++) {
+            String part = parts[i];
+            if (i == 0 || i == 1) { // First and last name are capitalized.
+                sb.append(part.substring(0, 1).toUpperCase());
+                sb.append(part.substring(1).toLowerCase());
+                sb.append(" ");
+            } else if (i == 2) { // Date is formatted as dd/mm/yyyy.
+                sb.append(part.substring(0, 2));
+                sb.append("/");
+                sb.append(part.substring(2, 4));
+                sb.append("/");
+                sb.append(part.substring(4));
+                sb.append(" ");
+            } else if (part.length() == 1) { // Middle initial is capitalized and followed by a full stop.
+                sb.append(part.toUpperCase());
+                sb.append(". ");
+            } else { // All other parts are added as is.
+                sb.append(part);
+                sb.append(" ");
+            }
+        }
+        // Return the modified line, either in uppercase or as is.
+        return (uppercase) ? sb.toString().trim().toUpperCase() : sb.toString().trim();
+    }
+}
