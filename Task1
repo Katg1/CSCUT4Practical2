@@ -5,68 +5,74 @@ import java.util.*;
 import javax.swing.*;
 import java.lang.Number;
 
+
 /**
+ * 
  * CSCU9T4 Java strings and files exercise.
+ *
  */
 public class FilesInOut {
 
-    public static void main(String[] args) {
-        // Check if at least one argument is provided.
-        if (args.length < 1) {
+    public static void main(String[] args) 
+    {
+        //Check if inputfile is there
+        if (args.length < 1) 
+        {
             System.err.println("Usage: java FilesInOut inputFile [outputFile]");
             return;
         }
-
-        // Get the input file name from the first argument.
+        // get the inputfile name and get the output file name
         String inputFileName = args[0];
-        // Get the output file name from the second argument, or use a default name if not provided.
         String outputFileName = (args.length > 1) ? args[1] : "output.txt";
 
         try (Scanner scanner = new Scanner(new File(inputFileName));
-             PrintWriter writer = new PrintWriter(outputFileName)) {
-            // Read each line from the input file.
-            while (scanner.hasNextLine()) {
+             PrintWriter writer = new PrintWriter(outputFileName)) 
+             {
+            while (scanner.hasNextLine()) //reading each line
+            {
                 String line = scanner.nextLine();
-                // Modify the line according to the modifyLine method.
-                String modifiedLine = modifyLine(line);
-                // Write the modified line to the output file.
-                writer.println(modifiedLine);
+                String modifiedLine = modifyLine(line);//modify the line 
+                writer.println(modifiedLine); //write the modified line to the outputfile
             }
-        } catch (FileNotFoundException e) {
+        } 
+        catch (FileNotFoundException e) 
+        {
             System.err.println("Error opening input file: " + e.getMessage());
-        } catch (IOException e) {
+        } 
+        catch (IOException e) 
+        {
             System.err.println("Error writing to output file: " + e.getMessage());
         }
     }
-
-    /**
-     * Modify a line of text by converting it to title case or upper case,
-     * and leaving certain words in lower case.
-     * @param line the original line of text
-     * @return the modified line of text
-     */
+    //For modifying the line of text by converting it to a titlecase or uppercase (task1)
     private static String modifyLine(String line) {
-        boolean titleCase = true; // Set to true to enable Title case conversion, false for upper case.
+        boolean titleCase = true; // Set to true for Title case conversion, or false for upper case.
         List<String> lowercaseWords = Arrays.asList("a", "an", "the", "and", "but", "or", "for", "nor", "on", "at", "to", "from", "by");
 
-        // Split the line into individual words.
-        String[] words = line.split("\\s+");
+        String[] words = line.split("\\s+"); //slpit line 
         StringBuilder sb = new StringBuilder();
-        // For each word, modify it according to the rules of title case or upper case.
-        for (int i = 0; i < words.length; i++) {
+        for (int i = 0; i < words.length; i++) 
+        {
             String word = words[i];
-            if (i == 0) { // The first word is always capitalized in title case.
+            if (i == 0) 
+            {
+                //the first name must be capitalized
                 sb.append(word.substring(0, 1).toUpperCase());
                 sb.append(word.substring(1).toLowerCase());
-            } else if (titleCase && lowercaseWords.contains(word.toLowerCase())) { // Certain words are kept in lower case in title case.
+            } 
+            else if (titleCase && lowercaseWords.contains(word.toLowerCase())) 
+            //some words are kept lowercase
+            {
                 sb.append(word.toLowerCase());
-            } else { // All other words are capitalized in title case or upper case.
+            } 
+            else //the Last name is capitalized
+            {
                 sb.append(word.substring(0, 1).toUpperCase());
                 sb.append(word.substring(1).toLowerCase());
             }
-            sb.append(" "); // Add a space after each word.
+            sb.append(" "); //add the space after each word
         }
-        // Return the modified line, either in title case or upper case.
         return (titleCase) ? sb.toString().trim() : line.toUpperCase();
+        //return the modified line 
     }
 }
