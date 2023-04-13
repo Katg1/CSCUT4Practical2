@@ -1,91 +1,41 @@
 import java.io.*;
+import java.awt.*;
+import java.awt.event.*;
 import java.util.*;
+import javax.swing.*;
+import java.lang.Number;
 
-public class FormatNamesm {
-
+public class Task3 {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
+        String inputFileName, outputFileName;
 
-        // Get input file name from user.
-        String inputFileName = null;
-        while (inputFileName == null) {
-            System.out.print("Enter input file name: ");
+        do {
+            System.out.print("Enter the input file name: ");
             inputFileName = scanner.nextLine();
-            File inputFile = new File(inputFileName);
-            if (!inputFile.exists()) {
-                System.err.println("Error: Input file does not exist.");
-                inputFileName = null;
-            }
-        }
+        } while (!new File(inputFileName).exists());
 
-        // Get output file name from user.
-        String outputFileName = null;
-        while (outputFileName == null) {
-            System.out.print("Enter output file name: ");
+        do {
+            System.out.print("Enter the output file name: ");
             outputFileName = scanner.nextLine();
-            try {
-                PrintWriter testWriter = new PrintWriter(outputFileName);
-                testWriter.close();
-            } catch (FileNotFoundException e) {
-                System.err.println("Error: Output file cannot be created.");
-                outputFileName = null;
-            }
-        }
+        } while (!new File(outputFileName).canWrite());
 
-        // Check if the user wants to convert to uppercase.
-        System.out.print("Convert to uppercase? (y/n): ");
-        boolean uppercase = (scanner.nextLine().toLowerCase().equals("y"));
-
-        try (Scanner fileScanner = new Scanner(new File(inputFileName));
-             PrintWriter writer = new PrintWriter(outputFileName)) {
-            // Read each line from the input file.
-            while (fileScanner.hasNextLine()) {
-                String line = fileScanner.nextLine();
-                // Modify the line according to the modifyLine method.
-                String modifiedLine = modifyLine(line, uppercase);
-                // Write the modified line to the output file.
-                writer.println(modifiedLine);
+        try (
+            BufferedReader reader = new BufferedReader(new FileReader(inputFileName));
+            BufferedWriter writer = new BufferedWriter(new FileWriter(outputFileName));
+        ) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String modifiedLine = modifyLine(line);
+                writer.write(modifiedLine);
+                writer.newLine();
             }
-        } catch (FileNotFoundException e) {
-            System.err.println("Error opening input file: " + e.getMessage());
         } catch (IOException e) {
-            System.err.println("Error writing to output file: " + e.getMessage());
+            System.err.println("Error: " + e.getMessage());
         }
     }
 
-    /**
-     * Modify a line of text by formatting the names and dates.
-     * @param line the original line of text
-     * @param uppercase whether to convert the text to uppercase
-     * @return the modified line of text
-     */
-    private static String modifyLine(String line, boolean uppercase) {
-        // Split the line into individual parts.
-        String[] parts = line.split("\\s+");
-        StringBuilder sb = new StringBuilder();
-        // For each part, format it according to the rules.
-        for (int i = 0; i < parts.length; i++) {
-            String part = parts[i];
-            if (i == 0 || i == 1) { // First and last name are capitalized.
-                sb.append(part.substring(0, 1).toUpperCase());
-                sb.append(part.substring(1).toLowerCase());
-                sb.append(" ");
-            } else if (i == 2) { // Date is formatted as dd/mm/yyyy.
-                sb.append(part.substring(0, 2));
-                sb.append("/");
-                sb.append(part.substring(2, 4));
-                sb.append("/");
-                sb.append(part.substring(4));
-                sb.append(" ");
-            } else if (part.length() == 1) { // Middle initial is capitalized and followed by a full stop.
-                sb.append(part.toUpperCase());
-                sb.append(". ");
-            } else { // All other parts are added as is.
-                sb.append(part);
-                sb.append(" ");
-            }
-        }
-        // Return the modified line, either in uppercase or as is.
-        return (uppercase) ? sb.toString().trim().toUpperCase() : sb.toString().trim();
+    private static String modifyLine(String line) {
+        // code for modifying the line
     }
 }
